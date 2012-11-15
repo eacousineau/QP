@@ -11,14 +11,18 @@
 # Complete this to make it ! #
 ##############################
 NAME 	= qp	# Name of executable file
-SRC	= uQuadProg++.cc umain.cc EigenQP.cpp	# List of *.c
-INCL  	= uQuadProg++.hh EigenQP.h		# List of *.h
+#SRC	= uQuadProg++.cc umain.cc EigenQP.cpp	# List of *.c
+#INCL  	= uQuadProg++.hh EigenQP.h		# List of *.h
+
+SRC	= EigenQP.cpp simple.cpp	# List of *.c
+INCL  	= EigenQP.h		# List of *.h
+
 ################
 # Optional add #
 ################
-IPATH   = -I. -I./eigen/          # path of include file
-OBJOPT  = -O4 -Wall -msse2 -fopenmp      # option for obj
-EXEOPT  = -O4 -Wall -msse2 -fopenmp     # option for exe (-lefence ...)
+IPATH   = -I. -I/usr/include/eigen3          # path of include file
+OBJOPT  = -Os -Wall -msse2 -fopenmp      # option for obj
+EXEOPT  = -Os -Wall -msse2 -fopenmp     # option for exe (-lefence ...)
 LPATH   = -L.           # path for librairies ... 
 
 #####################
