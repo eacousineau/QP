@@ -11,6 +11,9 @@
 namespace btime = boost::posix_time;
 // Use progress_timer ?
 
+#define EIGEN_NO_AUTOMATIC_RESIZING
+#define EIGEN_NO_MALLOC
+
 #include <Eigen/Eigen>
 #include "EigenQPStatic.hpp"
 

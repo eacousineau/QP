@@ -2,6 +2,7 @@
 ## Makefile
 ##  
 ## Made by wingsit
+## Modified by eacousineau
 ## Login   <wingsitwingsit-desktop>
 ##
 ## Started on  Wed Sep 15 17:45:25 2010 wingsit
@@ -14,54 +15,39 @@
 ################
 # Optional add #
 ################
-IPATH   = -I. -I/usr/include/eigen3          # path of include file
-OBJOPT  = -O4 -Wall -msse2 -fopenmp      # option for obj
-EXEOPT  = -O4 -Wall -msse2 -fopenmp     # option for exe (-lefence ...)
-LPATH   = -L.           # path for librairies ... 
+INCLUDE   = -I. -I/usr/include/eigen3          # path of include file
+CFLAGS  = -O4 -Wall -msse2 -fopenmp      # option for obj
+LFLAGS  = -O4 -Wall -msse2 -fopenmp     # option for exe (-lefence ...)
+LFLAGS += -L.           # path for librairies ... 
+
+BASE_TARGET = simple
+BASE_OBJS = simple.o EigenQP.o
+BASE_HEADERS = 
+
+STATIC_TARGET = simple_static
+STATIC_OBJS = simple_static.o
+STATIC_HEADERS = EigenQPStatic.hpp
 
 #####################
 # Macro Definitions #
 #####################
-CC 	= g++
-MAKE 	= make
-SHELL	= /bin/sh
-OBJS 	= $(SRC:.c=.o) 
-RM 	= /bin/rm -f 	
-COMP	= gzip -9v
-UNCOMP	= gzip -df
-STRIP	= strip
+CXX = g++
+CFLAGS  += $(INCLUDE)
 
-CFLAGS  = $(OBJOPT) $(IPATH)
-LDFLAGS = $(EXEOPT) $(LPATH)
-
-.SUFFIXES: .h.Z .c.Z .h.gz .c.gz .c.z .h.z 
-
+.PHONY: all clean
 ##############################
 # Basic Compile Instructions #
 ##############################
 
-all:	simple simple_static
-simple_static: simple_static.o EigenQPStatic.hpp
-	$(CC) simple_static.o $(LDFLAGS) -o simple_static 
-	
-simple: simple.o EigenQP.o EigenQP.h
-	$(CC) simple.o EigenQP.o  $(LDFLAGS) -o simple
-
-#	$(STRIP) ./$(NAME) # if you debug ,don't strip ...
-
-depend:
-	g++ $(IPATH) -MM $(SRC) 
+all:	$(BASE_TARGET) $(STATIC_TARGET)
 clean:
-	-$(RM) simple simple_static *.o
-fclean:
-	-$(RM) $(NAME)
-comp: clean
-	$(COMP) $(INCL) $(SRC)
-ucomp: 
-	$(UNCOMP) $(SRC) $(INCL)
-
-.c.Z.c .h.Z.h .c.gz.c .h.gz.h .c.z.c .h.z.h :
-	 -$(UNCOMP) $<
+	-rm -f $(BASE_TARGET) $(STATIC_TARGET) *.o
+	
+$(STATIC_TARGET): $(STATIC_OBJS) $(STATIC_HEADERS)
+	$(CXX) $(STATIC_OBJS) $(LFLAGS) -o $(STATIC_TARGET)
+	
+$(BASE_TARGET): $(BASE_OBJS) $(BASE_HEADERS)
+	$(CXX) $(BASE_OBJS)  $(LFLAGS) -o $(BASE_TARGET)
 
 .cpp.o:
-	$(CC) $(IPATH) $(CFLAGS) -c $< 
+	$(CXX) $(IPATH) $(CFLAGS) -c $< 

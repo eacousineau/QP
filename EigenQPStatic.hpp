@@ -52,6 +52,8 @@ using std::vector;
 //#define EROWS(X) X::RowsAtCompileTime
 //#define ECOLS(X) X::ColsAtCompileTime
 
+// TODO: Make some sort of workspace just like CVXGEN... Later though?
+
 namespace QP
 {
 
