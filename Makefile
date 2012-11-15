@@ -10,19 +10,13 @@
 ##############################
 # Complete this to make it ! #
 ##############################
-NAME 	= qp	# Name of executable file
-#SRC	= uQuadProg++.cc umain.cc EigenQP.cpp	# List of *.c
-#INCL  	= uQuadProg++.hh EigenQP.h		# List of *.h
-
-SRC	= EigenQP.cpp simple.cpp	# List of *.c
-INCL  	= EigenQP.h		# List of *.h
 
 ################
 # Optional add #
 ################
 IPATH   = -I. -I/usr/include/eigen3          # path of include file
-OBJOPT  = -Os -Wall -msse2 -fopenmp      # option for obj
-EXEOPT  = -Os -Wall -msse2 -fopenmp     # option for exe (-lefence ...)
+OBJOPT  = -O4 -Wall -msse2 -fopenmp      # option for obj
+EXEOPT  = -O4 -Wall -msse2 -fopenmp     # option for exe (-lefence ...)
 LPATH   = -L.           # path for librairies ... 
 
 #####################
@@ -46,15 +40,19 @@ LDFLAGS = $(EXEOPT) $(LPATH)
 # Basic Compile Instructions #
 ##############################
 
-all:	$(NAME)
-$(NAME): $(OBJS) $(SRC) $(INCL)  
-	$(CC) $(IPATH)  $(OBJS) $(LDFLAGS) -o $(NAME) 
+all:	simple simple_static
+simple_static: simple_static.o EigenQPStatic.hpp
+	$(CC) simple_static.o $(LDFLAGS) -o simple_static 
+	
+simple: simple.o EigenQP.o EigenQP.h
+	$(CC) simple.o EigenQP.o  $(LDFLAGS) -o simple
+
 #	$(STRIP) ./$(NAME) # if you debug ,don't strip ...
 
 depend:
 	g++ $(IPATH) -MM $(SRC) 
 clean:
-	-$(RM) $(NAME) $(OBJS) *~
+	-$(RM) simple simple_static *.o
 fclean:
 	-$(RM) $(NAME)
 comp: clean
@@ -65,8 +63,5 @@ ucomp:
 .c.Z.c .h.Z.h .c.gz.c .h.gz.h .c.z.c .h.z.h :
 	 -$(UNCOMP) $<
 
-.c.o:
-	$(CC) $(INCLUDE) $(CFLAGS) -c $< 
-################
-# Dependencies #
-################
+.cpp.o:
+	$(CC) $(IPATH) $(CFLAGS) -c $< 

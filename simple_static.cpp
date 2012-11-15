@@ -12,39 +12,48 @@ namespace btime = boost::posix_time;
 // Use progress_timer ?
 
 #include <Eigen/Eigen>
-#include "EigenQP.h"
+#include "EigenQPStatic.hpp"
 
 using namespace Eigen;
 using namespace std;
 
 int main()
 {
-	int n = 2, // Variables
-		p = 0, // Equality Constraints
-		m = 3; // Inequality Constraints
+	#define n 2 // Variables
+	#define p 0 // Equality Constraints
+	#define m 3 // Inequality Constraints
 		
 	cout << setprecision(10);
 	int count = 10000;
 	
 	// Add n rows to constraints for x >= 0
-	MatrixXd H(n, n), A(m + n, n), Ae(p, n);
-	VectorXd x(n), f(n), b(m + n);
-	VectorXd be(p);
+	EMATd(n, n) H;
+	EMATd(n + m, n) A;
+	EMATd(p, n) Ae;
+	EVECd(n) x, f;
+	EVECd(m + n) b;
+	EVECd(p) be;
 	
-	H = MatrixXd::Identity(n, n);
-	f = VectorXd::Zero(n);
+	be.setZero(p);
+	
+	H = EMATd(n, n)::Identity();
+	//f = EVECd(::Zero(n);
 	A <<
-		-MatrixXd::Identity(n, n),
+		-EMATd(n, n)::Identity(),
 		-1, -2,
 		-1, 1,
 		1, 0;
 	b <<
-		VectorXd::Zero(n),
+		EVECd(n)::Zero(),
 		-2, 1, 3; //, ;
 	
-	// For their library
+	// Convert from A x <= b  ==>  -A^T >= b
+	/*
 	A.transposeInPlace();
+	A *= -1;
 	Ae.transposeInPlace();
+	Ae *= -1;
+	*/
 	
 	btime::ptime tic = btime::microsec_clock::local_time();
 	//boost::timer timer;
@@ -52,7 +61,7 @@ int main()
 	double objVal;
 	for (int i = 0; i < count; ++i)
 	{
-		objVal = QP::solve_quadprog(H, f, -Ae, be, -A, b, x);
+		objVal = QP::solve_quadprog<n, p, m + n>(H, f, -Ae.transpose(), be, -A.transpose(), b, x);
 	}
 	btime::time_duration toc = btime::microsec_clock::local_time() - tic;
 	cout << "Elapsed time: " << setprecision(8) << toc.total_milliseconds() << " ms\n";
